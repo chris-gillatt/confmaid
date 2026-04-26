@@ -8,3 +8,4 @@ coverage/
 .env
 .forge/
 .env.local
+tmp/

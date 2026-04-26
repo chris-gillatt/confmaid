@@ -61,3 +61,5 @@ npm test
 ## Shell Command Guidance
 
 - Prefer temporary files over heredocs when running terminal commands; heredocs can be brittle across shells and execution environments.
+- For complex shell commands, write commands to `tmp/*.sh`, run `bash -n` for syntax validation, then execute.
+- Keep temporary scripts and artefacts under `tmp/`, which is intentionally gitignored and disposable.

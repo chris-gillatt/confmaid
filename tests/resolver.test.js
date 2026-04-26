@@ -23,6 +23,19 @@ test("resolver validate operation returns validation result", async () => {
   assert.equal(response.result.diagramType, "flowchart");
 });
 
+test("resolver validate handles Forge request object shape", async () => {
+  const response = await localHandler({
+    payload: {
+      operation: "validate",
+      source: "flowchart TD\nA-->B",
+    },
+  });
+
+  assert.equal(response.ok, true);
+  assert.equal(response.result.isValid, true);
+  assert.equal(response.result.errors.length, 0);
+});
+
 test("resolver render operation returns html payload", async () => {
   const response = await localHandler({
     payload: {
@@ -67,6 +80,23 @@ test("resolver saveMacroConfig returns macro config and rendered payload", async
   assert.equal(response.ok, true);
   assert.equal(response.operation, "saveMacroConfig");
   assert.equal(response.result.macroConfig.title, "Flow");
+  assert.equal(response.result.rendered.ok, true);
+});
+
+test("saveMacroConfig supports Forge request object in handler call", async () => {
+  const { saveMacroConfig } = require("../src/resolverHandlers");
+  const response = await saveMacroConfig({
+    payload: {
+      macroConfig: {
+        source: "flowchart TD\nA-->B",
+        title: "Forge request",
+      },
+    },
+    context: {},
+  });
+
+  assert.equal(response.ok, true);
+  assert.equal(response.result.macroConfig.title, "Forge request");
   assert.equal(response.result.rendered.ok, true);
 });
 

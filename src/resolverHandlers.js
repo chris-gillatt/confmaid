@@ -2,6 +2,25 @@ const { buildMacroConfig, validateConfigLimits } = require("./lib/macroConfig");
 const { renderMacroPayload } = require("./lib/macroRenderer");
 const { validateMermaidSource } = require("./lib/mermaidValidation");
 
+function resolveInvocationInput(firstArg = {}, secondArg = {}) {
+  if (
+    firstArg &&
+    typeof firstArg === "object" &&
+    (Object.prototype.hasOwnProperty.call(firstArg, "payload") ||
+      Object.prototype.hasOwnProperty.call(firstArg, "context"))
+  ) {
+    return {
+      payload: firstArg.payload || {},
+      context: firstArg.context || {},
+    };
+  }
+
+  return {
+    payload: firstArg || {},
+    context: secondArg || {},
+  };
+}
+
 async function healthcheck() {
   return {
     ok: true,
@@ -10,7 +29,8 @@ async function healthcheck() {
   };
 }
 
-async function validate(payload = {}) {
+async function validate(firstArg = {}, secondArg = {}) {
+  const { payload } = resolveInvocationInput(firstArg, secondArg);
   const source = payload.source || "";
   return {
     ok: true,
@@ -19,7 +39,8 @@ async function validate(payload = {}) {
   };
 }
 
-async function render(payload = {}) {
+async function render(firstArg = {}, secondArg = {}) {
+  const { payload } = resolveInvocationInput(firstArg, secondArg);
   const source = payload.source || "";
   return {
     ok: true,
@@ -28,7 +49,8 @@ async function render(payload = {}) {
   };
 }
 
-async function loadMacroConfig(payload = {}, context = {}) {
+async function loadMacroConfig(firstArg = {}, secondArg = {}) {
+  const { payload, context } = resolveInvocationInput(firstArg, secondArg);
   const storedConfig =
     payload.macroConfig ||
     context.extension?.macro?.parameters ||
@@ -46,7 +68,8 @@ async function loadMacroConfig(payload = {}, context = {}) {
   };
 }
 
-async function saveMacroConfig(payload = {}) {
+async function saveMacroConfig(firstArg = {}, secondArg = {}) {
+  const { payload } = resolveInvocationInput(firstArg, secondArg);
   const macroConfig = buildMacroConfig(payload.macroConfig || payload);
   const limitCheck = validateConfigLimits(macroConfig);
 
@@ -73,7 +96,8 @@ async function saveMacroConfig(payload = {}) {
   };
 }
 
-async function renderFromMacroConfig(payload = {}, context = {}) {
+async function renderFromMacroConfig(firstArg = {}, secondArg = {}) {
+  const { payload, context } = resolveInvocationInput(firstArg, secondArg);
   const storedConfig =
     payload.macroConfig ||
     context.extension?.macro?.parameters ||

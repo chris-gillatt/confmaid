@@ -6,6 +6,14 @@ Confmaid is a Confluence Cloud Forge app project for authoring and rendering Mer
 
 This project is licensed under the MIT Licence. See `LICENSE`.
 
+## Test Environment
+
+- Confluence test site: `https://tucan.atlassian.net`
+- Test space: `HOME`
+- Seed test page created: `confmaid`
+
+The test page currently includes two Mermaid code samples (flowchart and sequence) for iterative plugin testing.
+
 ## Current Scope
 
 - Platform: Confluence Cloud (Forge)
@@ -61,6 +69,8 @@ This repository now contains a Forge-aligned resolver baseline with macro config
 ## Container-First Development (Recommended)
 
 Using Podman keeps the host clean and gives a reproducible Node/npm environment for the project.
+
+Container build context ignores are managed in `.containerignore`, including `.env.local` so local secrets are not sent to the container build context.
 
 On macOS, initialise and start the Podman VM once:
 

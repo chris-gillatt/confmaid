@@ -25,6 +25,7 @@ This project is licensed under the MIT Licence. See `LICENSE`.
 - `tests/mermaidValidation.test.js`: baseline unit tests for validator behaviour
 - `static/main/index.html`: macro editor and preview scaffold UI
 - `static/main/main.js`: Mermaid runtime load, resolver invocation, and local persistence fallback
+- `static/main/invokeAdapter.mjs`: Forge bridge invoke adapter with local fallback
 
 ## Contribution Policy
 
@@ -41,7 +42,12 @@ The resolver currently supports these payload operations:
 - `saveMacroConfig`: validates and returns persisted config plus rendered preview payload
 - `renderFromMacroConfig`: renders using saved macro config source
 
-`static/main/main.js` uses `window.__CONFMAID_INVOKE__` when present, which allows Forge bridge integration without changing editor logic. If not present, it falls back to local browser storage for development and reopen-flow testing.
+`static/main/main.js` resolves invoke in this order:
+
+1. `window.__CONFMAID_INVOKE__`
+2. `window.__FORGE_BRIDGE_INVOKE__`
+3. dynamic import of `@forge/bridge` invoke
+4. local fallback invoke for development and reopen-flow testing
 
 ## Local Development (Current)
 

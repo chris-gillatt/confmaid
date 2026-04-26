@@ -119,3 +119,4 @@ Confluence users need a reliable way to create and maintain diagrams as text so 
 - 2026-04-26: Initial problem statement, requirements, phase framing, and ADR-001 created.
 - 2026-04-26: Added ADR-002 for resolver operation design and macro config persistence contract.
 - 2026-04-26: Added ADR-003 for UI invoke adapter strategy and local persistence fallback.
+- 2026-04-26: Added bridge adapter implementation path in Custom UI with ordered invoke fallback resolution.

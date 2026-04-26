@@ -1,3 +1,5 @@
+import { createInvokeAdapter } from "./invokeAdapter.mjs";
+
 const EXAMPLE_SOURCE = `flowchart TD
   A[User opens page] --> B[Insert Confmaid macro]
   B --> C[Paste Mermaid source]
@@ -18,6 +20,7 @@ const renderBtn = document.getElementById("renderBtn");
 const resetBtn = document.getElementById("resetBtn");
 
 let mermaid;
+let invokeOperation;
 
 function getConfigFromUI() {
   return {
@@ -156,13 +159,12 @@ async function invokeLocal(operation, payload = {}) {
   return { ok: false, operation, error: "Unsupported operation." };
 }
 
-async function invokeOperation(operation, payload = {}) {
-  const providedInvoke = window.__CONFMAID_INVOKE__;
-  if (typeof providedInvoke === "function") {
-    return providedInvoke(operation, payload);
+async function invokeViaAdapter(operation, payload = {}) {
+  if (!invokeOperation) {
+    invokeOperation = await createInvokeAdapter(invokeLocal);
   }
 
-  return invokeLocal(operation, payload);
+  return invokeOperation(operation, payload);
 }
 
 function setStatus(kind, message) {
@@ -226,7 +228,7 @@ async function renderSource() {
   setStatus("warn", "Rendering...");
 
   try {
-    const validationResponse = await invokeOperation("validate", {
+    const validationResponse = await invokeViaAdapter("validate", {
       source,
     });
     const validation = validationResponse?.result || {};
@@ -250,7 +252,7 @@ async function renderSource() {
 
 async function loadMacroConfig() {
   setStatus("warn", "Loading saved configuration...");
-  const response = await invokeOperation("loadMacroConfig", {});
+  const response = await invokeViaAdapter("loadMacroConfig", {});
   const macroConfig = response?.result?.macroConfig || {};
   applyConfigToUI(macroConfig);
   setStatus("ok", "Configuration loaded.");
@@ -259,7 +261,7 @@ async function loadMacroConfig() {
 async function saveMacroConfig() {
   setStatus("warn", "Saving configuration...");
 
-  const response = await invokeOperation("saveMacroConfig", {
+  const response = await invokeViaAdapter("saveMacroConfig", {
     macroConfig: getConfigFromUI(),
   });
 
@@ -273,7 +275,7 @@ async function saveMacroConfig() {
 
 async function validateSource() {
   const source = sourceEl.value || "";
-  const response = await invokeOperation("validate", { source });
+  const response = await invokeViaAdapter("validate", { source });
   const validation = response?.result || {};
   setDiagnostics(validation);
 
@@ -308,6 +310,13 @@ resetBtn.addEventListener("click", () => {
 });
 
 async function bootstrap() {
+  invokeOperation = await createInvokeAdapter(invokeLocal);
+
+  const probe = await invokeOperation("healthcheck", {});
+  if (probe?.message && probe.message.includes("Local")) {
+    setStatus("warn", "Running with local invoke fallback.");
+  }
+
   await loadMacroConfig();
   await renderSource();
 }

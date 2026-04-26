@@ -128,6 +128,8 @@ forge --version
 node --test
 ```
 
+The suite now includes a resolver contract integration-style lifecycle test (`tests/macroLifecycle.integration.test.js`) for insert/save/reopen/edit/render flows.
+
 ### Forge bootstrap (next runnable step)
 
 ```bash
@@ -137,7 +139,7 @@ forge register
 
 ## Next Implementation Steps
 
-1. Replace `window.__CONFMAID_INVOKE__` shim with the Forge bridge `invoke` wiring in deployed Custom UI assets.
+1. Replace the interim dynamic bridge import with packaged `@forge/bridge` wiring in deployed Custom UI assets.
 2. Persist macro configuration via Confluence macro edit/save cycle and reload flow.
-3. Add integration tests around end-to-end insert/edit/save/reopen behaviour.
+3. Run end-to-end integration tests against a live Forge/Confluence environment once credentials are available.
 4. Add security and performance test suites.

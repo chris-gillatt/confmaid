@@ -75,17 +75,9 @@ async function getForgeContext() {
   };
 }
 
-async function submitMacroConfig(config) {
-  try {
-    if (typeof window.__FORGE_BRIDGE_VIEW__?.submit === "function") {
-      await window.__FORGE_BRIDGE_VIEW__.submit(config);
-      return;
-    }
-  } catch {
-    // Fall through to local dev fallback.
-  }
-  writeLocalConfig(config);
-}
+// view.submit() only works in a Forge macro config-panel dialog.
+// For an inline Custom UI macro we persist via the resolver (Forge Storage)
+// instead. Config is written to storage on save and read back on load.
 
 function readLocalConfig() {
   try {
@@ -372,14 +364,14 @@ async function saveMacroConfig() {
   });
 
   if (!response?.ok) {
-    setStatus("error", "Unable to save configuration.");
+    const errMsg = response?.errors?.[0] || "Unable to save configuration.";
+    setStatus("error", errMsg);
     return;
   }
 
-  // Persist config into Confluence content via view.submit().
-  // This is the standard macro UX — the dialog closes after submit.
-  setStatus("ok", "Saving to macro...");
-  await submitMacroConfig(config);
+  // Also persist locally so Revert works in the same session.
+  writeLocalConfig(config);
+  setStatus("ok", "Saved.");
 }
 
 async function validateSource() {
@@ -437,14 +429,17 @@ async function bootstrap() {
     await renderSource();
   } else {
     document.body.classList.add("mode-view");
-    const displayMode = contextConfig.displayMode || "standard";
+    // Load config from Forge Storage via resolver.
+    const configResponse = await invokeViaAdapter("loadMacroConfig", {});
+    const savedConfig = configResponse?.result?.macroConfig || {};
+    const displayMode = savedConfig.displayMode || contextConfig.displayMode || "standard";
     if (displayMode === "dual") {
       document.body.classList.add("display-dual");
       sourceEl.setAttribute("readonly", "");
       titleEl.setAttribute("readonly", "");
     }
-    if (contextConfig.source) {
-      applyConfigToUI(contextConfig);
+    if (savedConfig.source) {
+      applyConfigToUI(savedConfig);
       await renderSource();
     } else {
       previewEl.innerHTML = '<p class="view-placeholder">No diagram configured\u2014edit this page to add one.</p>';

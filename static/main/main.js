@@ -381,10 +381,11 @@ async function saveMacroConfig() {
     return;
   }
 
-  await submitMacroConfig(config, true);
+  // Close the config modal after successful save so users can continue editing the page.
+  await submitMacroConfig(config, false);
   latestSavedConfig = config;
   writeLocalConfig(config);
-  setStatus("ok", "Saved.");
+  setStatus("ok", "Saved. Closing...");
 }
 
 async function validateSource() {
@@ -440,6 +441,7 @@ async function bootstrap() {
 
   const context = await getForgeContext();
   const isConfiguring = context?.extension?.macro?.isConfiguring ?? false;
+  const isEditing = context?.extension?.isEditing ?? false;
 
   if (isConfiguring) {
     document.body.classList.add("mode-config");
@@ -447,6 +449,10 @@ async function bootstrap() {
     await renderSource();
   } else {
     document.body.classList.add("mode-view");
+    if (isEditing) {
+      // In page editor (non-config), keep macro easy to select/configure.
+      document.body.classList.add("mode-editor-view");
+    }
     const savedConfig = context?.extension?.config || context?.extension?.macro?.config || {};
     const displayMode = savedConfig.displayMode || "standard";
     if (displayMode === "dual") {

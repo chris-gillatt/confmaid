@@ -101,7 +101,21 @@ Confluence users need a reliable way to create and maintain diagrams as text so 
   - Keeps validation and sanitisation logic in one path, reducing divergent behaviour.
   - Makes persistence behaviour testable in local and container test runs before deployment.
 
+### ADR-003: UI Invoke Adapter with Local Persistence Fallback
+
+- Status: Accepted
+- Date: 2026-04-26
+- Context: The project needs to continue feature delivery before full Forge bridge packaging is wired for deployed Custom UI assets.
+- Decision:
+  - Use a UI invoke adapter based on `window.__CONFMAID_INVOKE__` for resolver operations.
+  - Provide a local browser storage fallback for `loadMacroConfig` and `saveMacroConfig` to support edit/save/reopen flows during local development.
+- Consequences:
+  - Keeps editor behaviour aligned with resolver contracts while reducing local development friction.
+  - Allows rapid iteration of macro lifecycle UX without blocking on packaging details.
+  - Requires follow-up integration step to wire Forge bridge `invoke` in deployed assets.
+
 ## 11. Change Log
 
 - 2026-04-26: Initial problem statement, requirements, phase framing, and ADR-001 created.
 - 2026-04-26: Added ADR-002 for resolver operation design and macro config persistence contract.
+- 2026-04-26: Added ADR-003 for UI invoke adapter strategy and local persistence fallback.

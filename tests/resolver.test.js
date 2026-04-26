@@ -70,6 +70,22 @@ test("resolver saveMacroConfig returns macro config and rendered payload", async
   assert.equal(response.result.rendered.ok, true);
 });
 
+test("resolver saveMacroConfig rejects oversize source", async () => {
+  const response = await localHandler({
+    payload: {
+      operation: "saveMacroConfig",
+      macroConfig: {
+        source: `flowchart TD\n${"A".repeat(50001)}`,
+      },
+    },
+  });
+
+  assert.equal(response.ok, false);
+  assert.equal(response.operation, "saveMacroConfig");
+  assert.ok(Array.isArray(response.errors));
+  assert.ok(response.errors[0].includes("exceeds"));
+});
+
 test("resolver renderFromMacroConfig uses saved source", async () => {
   const response = await localHandler({
     payload: {
@@ -84,4 +100,26 @@ test("resolver renderFromMacroConfig uses saved source", async () => {
   assert.equal(response.operation, "renderFromMacroConfig");
   assert.equal(response.result.rendered.ok, true);
   assert.ok(response.result.rendered.html.includes('<pre class="mermaid">'));
+});
+
+test("resolver loadMacroConfig can read context parameters", async () => {
+  const response = await localHandler({
+    payload: {
+      operation: "loadMacroConfig",
+    },
+    context: {
+      extension: {
+        macro: {
+          parameters: {
+            source: "flowchart TD\nA-->B",
+            title: "Context macro",
+          },
+        },
+      },
+    },
+  });
+
+  assert.equal(response.ok, true);
+  assert.equal(response.result.macroConfig.title, "Context macro");
+  assert.equal(response.result.macroConfig.source, "flowchart TD\nA-->B");
 });

@@ -2,6 +2,10 @@
 
 Confmaid is a Confluence Cloud Forge app project for authoring and rendering Mermaid diagrams inside Confluence pages.
 
+## Licence
+
+This project is licensed under the MIT Licence. See `LICENSE`.
+
 ## Current Scope
 
 - Platform: Confluence Cloud (Forge)
@@ -20,7 +24,7 @@ Confmaid is a Confluence Cloud Forge app project for authoring and rendering Mer
 - `src/index.js`: Forge resolver entrypoint with local test fallback
 - `tests/mermaidValidation.test.js`: baseline unit tests for validator behaviour
 - `static/main/index.html`: macro editor and preview scaffold UI
-- `static/main/main.js`: Mermaid runtime load and render interaction logic
+- `static/main/main.js`: Mermaid runtime load, resolver invocation, and local persistence fallback
 
 ## Contribution Policy
 
@@ -36,6 +40,8 @@ The resolver currently supports these payload operations:
 - `loadMacroConfig`: returns normalised macro config for editor hydration
 - `saveMacroConfig`: validates and returns persisted config plus rendered preview payload
 - `renderFromMacroConfig`: renders using saved macro config source
+
+`static/main/main.js` uses `window.__CONFMAID_INVOKE__` when present, which allows Forge bridge integration without changing editor logic. If not present, it falls back to local browser storage for development and reopen-flow testing.
 
 ## Local Development (Current)
 
@@ -125,7 +131,7 @@ forge register
 
 ## Next Implementation Steps
 
-1. Wire static editor actions to resolver invokes in the Forge Custom UI bridge.
+1. Replace `window.__CONFMAID_INVOKE__` shim with the Forge bridge `invoke` wiring in deployed Custom UI assets.
 2. Persist macro configuration via Confluence macro edit/save cycle and reload flow.
 3. Add integration tests around end-to-end insert/edit/save/reopen behaviour.
 4. Add security and performance test suites.

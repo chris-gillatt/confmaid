@@ -68,6 +68,26 @@
         line-height: 1.4;
       }
 
+      .field {
+        display: grid;
+        gap: 6px;
+        padding: 12px 12px 0;
+      }
+
+      .field label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #454950;
+      }
+
+      .field input {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
       .actions {
         display: flex;
         gap: 8px;
@@ -88,6 +108,10 @@
 
       button.secondary {
         background: #5b5f66;
+      }
+
+      button.warning {
+        background: #c26a00;
       }
 
       .status {
@@ -113,21 +137,42 @@
         padding: 12px;
         overflow: auto;
       }
+
+      #diagnostics {
+        margin: 0;
+        padding: 10px 12px;
+        border-top: 1px solid var(--border);
+        background: #fffdfa;
+        font-size: 12px;
+        color: #5c5f66;
+      }
+
+      #diagnostics li + li {
+        margin-top: 4px;
+      }
     </style>
   </head>
   <body>
     <main class="layout">
       <section class="panel">
         <h2>Mermaid Source</h2>
+        <div class="field">
+          <label for="title">Diagram title</label>
+          <input id="title" type="text" value="Mermaid diagram" maxlength="120" />
+        </div>
         <textarea id="source">flowchart TD
   A[User opens page] --> B[Insert Confmaid macro]
   B --> C[Paste Mermaid source]
   C --> D[Render diagram]</textarea>
         <div class="actions">
+          <button id="loadBtn" type="button" class="secondary">Load Saved</button>
+          <button id="saveBtn" type="button">Save Config</button>
+          <button id="validateBtn" type="button" class="warning">Validate</button>
           <button id="renderBtn" type="button">Render Preview</button>
           <button id="resetBtn" type="button" class="secondary">Reset Example</button>
         </div>
         <div id="status" class="status">Ready.</div>
+        <ul id="diagnostics"></ul>
       </section>
 
       <section class="panel">

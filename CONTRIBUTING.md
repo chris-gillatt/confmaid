@@ -57,3 +57,7 @@ Run tests:
 ```bash
 npm test
 ```
+
+## Shell Command Guidance
+
+- Prefer temporary files over heredocs when running terminal commands; heredocs can be brittle across shells and execution environments.

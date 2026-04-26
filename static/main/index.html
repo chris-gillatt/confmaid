@@ -33,7 +33,7 @@ flowchart TD
         >
         <div class="actions edit-actions">
           <button id="loadBtn" type="button" class="secondary">Revert</button>
-          <button id="saveBtn" type="button">Save to Macro</button>
+          <button id="saveBtn" type="button">Save and Close</button>
           <button id="validateBtn" type="button" class="warning">Validate</button>
           <button id="renderBtn" type="button">Render Preview</button>
           <button id="resetBtn" type="button" class="secondary">Reset Example</button>
@@ -43,7 +43,7 @@ flowchart TD
       </section>
 
       <section class="panel preview-panel">
-        <h2>Preview</h2>
+        <h2 id="previewTitle">Mermaid diagram</h2>
         <div id="editorHint" class="editor-hint">
           Select this macro and click <strong>Configure</strong> (sliders icon) to edit.
         </div>

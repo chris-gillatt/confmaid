@@ -10,6 +10,7 @@ const LOCAL_CONFIG_KEY = "confmaid.macroConfig";
 
 const statusEl = document.getElementById("status");
 const previewEl = document.getElementById("preview");
+const previewTitleEl = document.getElementById("previewTitle");
 const sourceEl = document.getElementById("source");
 const titleEl = document.getElementById("title");
 const diagnosticsEl = document.getElementById("diagnostics");
@@ -49,9 +50,18 @@ function getConfigFromUI() {
   };
 }
 
+function setPreviewTitle(title) {
+  if (!previewTitleEl) {
+    return;
+  }
+
+  previewTitleEl.textContent = (title || DEFAULT_TITLE).trim() || DEFAULT_TITLE;
+}
+
 function applyConfigToUI(config = {}) {
   titleEl.value = config.title || DEFAULT_TITLE;
   sourceEl.value = config.source || EXAMPLE_SOURCE;
+  setPreviewTitle(config.title || DEFAULT_TITLE);
   if (displayModeEl) {
     displayModeEl.value = config.displayMode || "standard";
   }
@@ -406,6 +416,10 @@ renderBtn.addEventListener("click", () => {
   renderSource();
 });
 
+titleEl.addEventListener("input", () => {
+  setPreviewTitle(titleEl.value);
+});
+
 validateBtn.addEventListener("click", () => {
   validateSource();
 });
@@ -427,6 +441,7 @@ loadBtn.addEventListener("click", () => {
 resetBtn.addEventListener("click", () => {
   sourceEl.value = EXAMPLE_SOURCE;
   titleEl.value = DEFAULT_TITLE;
+  setPreviewTitle(DEFAULT_TITLE);
   renderSource();
 });
 

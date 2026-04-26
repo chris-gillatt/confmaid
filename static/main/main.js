@@ -297,6 +297,19 @@ function applyMermaidSvgFallbackStyles(svgElement) {
     edge.setAttribute("stroke-width", "1.6");
   }
 
+  // Sequence diagrams use different class names than flowcharts.
+  for (const line of svgElement.querySelectorAll(
+    ".messageLine0, .messageLine1, line.messageLine0, line.messageLine1, .signal-line, .actor-line",
+  )) {
+    line.setAttribute("fill", "none");
+    line.setAttribute("stroke", "#1f2937");
+    line.setAttribute("stroke-width", "1.6");
+  }
+
+  for (const dashedReturn of svgElement.querySelectorAll(".messageLine1, line.messageLine1")) {
+    dashedReturn.setAttribute("stroke-dasharray", "3,3");
+  }
+
   for (const arrow of svgElement.querySelectorAll(".arrowheadPath, marker path")) {
     arrow.setAttribute("fill", "#1f2937");
     arrow.setAttribute("stroke", "#1f2937");

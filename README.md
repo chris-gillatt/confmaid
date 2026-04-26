@@ -7,7 +7,7 @@ Confmaid is a Confluence Cloud Forge app project for authoring and rendering Mer
 - Platform: Confluence Cloud (Forge)
 - MVP diagrams: flowchart, sequence, class
 - Rendering strategy: hybrid direction, client-side-first MVP
-- Security baseline: strict input validation and sanitization gates
+- Security baseline: strict input validation and sanitisation gates
 
 ## Repository Structure
 
@@ -16,9 +16,13 @@ Confmaid is a Confluence Cloud Forge app project for authoring and rendering Mer
 - `src/lib/htmlSafety.js`: HTML escaping utility for untrusted source
 - `src/lib/macroRenderer.js`: safe macro payload rendering helper
 - `src/index.js`: resolver operations (`healthcheck`, `validate`, `render`)
-- `tests/mermaidValidation.test.js`: baseline unit tests for validator behavior
+- `tests/mermaidValidation.test.js`: baseline unit tests for validator behaviour
 - `static/main/index.html`: macro editor and preview scaffold UI
 - `static/main/main.js`: Mermaid runtime load and render interaction logic
+
+## Contribution Policy
+
+See `CONTRIBUTING.md` for commit conventions and the British English documentation standard.
 
 ## Implemented API Operations
 
@@ -41,7 +45,7 @@ This repository currently contains foundational implementation and tests for Mer
 
 Using Podman keeps the host clean and gives a reproducible Node/npm environment for the project.
 
-On macOS, initialize and start the Podman VM once:
+On macOS, initialise and start the Podman VM once:
 
 ```bash
 podman machine init

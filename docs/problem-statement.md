@@ -60,7 +60,7 @@ Confluence users need a reliable way to create and maintain diagrams as text so 
 ## 8. Risks and Mitigations
 
 - Risk: XSS through untrusted source.
-  - Mitigation: strict validation, sanitization, and isolated rendering strategy.
+  - Mitigation: strict validation, sanitisation, and isolated rendering strategy.
 - Risk: Mermaid parse/render failures impacting user trust.
   - Mitigation: deterministic error states and robust fallback UI.
 - Risk: Scope expansion before stable MVP.

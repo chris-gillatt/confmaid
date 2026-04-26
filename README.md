@@ -1,8 +1,10 @@
 # Confmaid - Mermaid Diagrams for Confluence
 
-Confmaid is a Confluence Cloud Forge app project for authoring and rendering Mermaid diagrams inside Confluence pages.
+[![dependabot_auto_merge](https://github.com/chris-gillatt/confmaid/actions/workflows/dependency-check.yml/badge.svg)](https://github.com/chris-gillatt/confmaid/actions/workflows/dependency-check.yml)
 
 ![confmaid](./images/confmaid-logo.png)
+
+Confmaid is a Confluence Cloud Forge app project for authoring and rendering Mermaid diagrams inside Confluence pages.
 
 ## Licence
 

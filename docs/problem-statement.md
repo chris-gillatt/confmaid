@@ -114,9 +114,23 @@ Confluence users need a reliable way to create and maintain diagrams as text so 
   - Allows rapid iteration of macro lifecycle UX without blocking on packaging details.
   - Requires follow-up integration step to wire Forge bridge `invoke` in deployed assets.
 
+### ADR-004: Packaged Forge Bridge for Custom UI Runtime
+
+- Status: Accepted
+- Date: 2026-04-26
+- Context: The interim dynamic import path for bridge invocation was useful for development, but deployment requires deterministic packaged assets.
+- Decision:
+  - Bundle `@forge/bridge` via the UI build step and load it as a local static vendor module.
+  - Keep adapter fallback logic for local development and test execution only.
+- Consequences:
+  - Aligns runtime behaviour with Forge deployment expectations.
+  - Removes external runtime dependency for bridge import resolution.
+  - Adds a build dependency and artefact generation step before deployment.
+
 ## 11. Change Log
 
 - 2026-04-26: Initial problem statement, requirements, phase framing, and ADR-001 created.
 - 2026-04-26: Added ADR-002 for resolver operation design and macro config persistence contract.
 - 2026-04-26: Added ADR-003 for UI invoke adapter strategy and local persistence fallback.
 - 2026-04-26: Added bridge adapter implementation path in Custom UI with ordered invoke fallback resolution.
+- 2026-04-26: Added ADR-004 for packaged Forge bridge runtime and local fallback boundaries.

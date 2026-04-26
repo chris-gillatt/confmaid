@@ -28,3 +28,17 @@ test("invoke adapter uses local fallback when bridge is unavailable", async () =
 
   assert.equal(response.source, "local");
 });
+
+test("invoke adapter prefers packaged forge bridge global", async () => {
+  const localInvoke = async () => ({ ok: true, source: "local" });
+  const expected = async () => ({ ok: true, source: "forge-bridge" });
+
+  const module = await importAdapterWithWindow({
+    __FORGE_BRIDGE_INVOKE__: expected,
+  });
+
+  const adapter = await module.createInvokeAdapter(localInvoke);
+  const response = await adapter("healthcheck", {});
+
+  assert.equal(response.source, "forge-bridge");
+});

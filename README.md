@@ -26,6 +26,8 @@ This project is licensed under the MIT Licence. See `LICENSE`.
 - `static/main/index.html`: macro editor and preview scaffold UI
 - `static/main/main.js`: Mermaid runtime load, resolver invocation, and local persistence fallback
 - `static/main/invokeAdapter.mjs`: Forge bridge invoke adapter with local fallback
+- `static/main/vendor/forge-bridge.js`: packaged Forge bridge invoke bundle for Custom UI runtime
+- `tools/build-ui.mjs`: UI build script for vendor bridge packaging
 
 ## Contribution Policy
 
@@ -46,8 +48,7 @@ The resolver currently supports these payload operations:
 
 1. `window.__CONFMAID_INVOKE__`
 2. `window.__FORGE_BRIDGE_INVOKE__`
-3. dynamic import of `@forge/bridge` invoke
-4. local fallback invoke for development and reopen-flow testing
+3. local fallback invoke for development and reopen-flow testing
 
 ## Local Development (Current)
 
@@ -90,6 +91,13 @@ podman run --rm -it \
 
 ```bash
 npm test
+```
+
+### 4) Build packaged UI bridge assets
+
+```bash
+npm install
+npm run build:ui
 ```
 
 ### Forge CLI in container
@@ -141,7 +149,7 @@ forge register
 
 ## Next Implementation Steps
 
-1. Replace the interim dynamic bridge import with packaged `@forge/bridge` wiring in deployed Custom UI assets.
+1. Deploy and install Forge app on the HOME space test site.
 2. Persist macro configuration via Confluence macro edit/save cycle and reload flow.
-3. Run end-to-end integration tests against a live Forge/Confluence environment once credentials are available.
+3. Run end-to-end integration tests against the live Forge/Confluence environment.
 4. Add security and performance test suites.

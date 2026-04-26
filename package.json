@@ -4,9 +4,14 @@
   "private": true,
   "description": "Confluence Mermaid integration project foundation",
   "dependencies": {
+    "@forge/bridge": "^4.5.0",
     "@forge/resolver": "^1.7.0"
   },
+  "devDependencies": {
+    "esbuild": "^0.24.2"
+  },
   "scripts": {
+    "build:ui": "node tools/build-ui.mjs",
     "test": "node --test"
   },
   "engines": {

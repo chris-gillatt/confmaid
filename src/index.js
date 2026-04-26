@@ -10,14 +10,19 @@ async function localHandler(request) {
 }
 
 function buildForgeDefinitions() {
-  let Resolver;
+  let ResolverCtor;
   try {
-    ({ Resolver } = require("@forge/resolver"));
+    const resolverModule = require("@forge/resolver");
+    ResolverCtor = resolverModule.default || resolverModule.Resolver || resolverModule;
   } catch (_error) {
     return localHandler;
   }
 
-  const resolver = new Resolver();
+  if (typeof ResolverCtor !== "function") {
+    return localHandler;
+  }
+
+  const resolver = new ResolverCtor();
   resolver.define("healthcheck", handlers.healthcheck);
   resolver.define("validate", handlers.validate);
   resolver.define("render", handlers.render);

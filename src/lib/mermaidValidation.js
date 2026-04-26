@@ -16,17 +16,17 @@ const SUSPICIOUS_PATTERN = /(javascript:|on\w+\s*=|<script|<iframe)/gi;
 const MAX_SOURCE_LENGTH = 50000;
 
 function firstMeaningfulLine(source) {
-  return source
-    .split("\n")
-    .map((line) => line.trim())
-    .find((line) => line.length > 0) || "";
+  return (
+    source
+      .split("\n")
+      .map((line) => line.trim())
+      .find((line) => line.length > 0) || ""
+  );
 }
 
 function detectDiagramType(source) {
   const header = firstMeaningfulLine(source);
-  const match = SUPPORTED_DIAGRAM_PREFIXES.find(({ prefix }) =>
-    header.startsWith(prefix)
-  );
+  const match = SUPPORTED_DIAGRAM_PREFIXES.find(({ prefix }) => header.startsWith(prefix));
   return match ? match.type : null;
 }
 
@@ -84,7 +84,9 @@ function validateMermaidSource(source) {
   }
 
   if (SUSPICIOUS_PATTERN.test(source)) {
-    warnings.push("Potentially unsafe patterns detected. Input should be sanitized before rendering.");
+    warnings.push(
+      "Potentially unsafe patterns detected. Input should be sanitized before rendering."
+    );
   }
 
   return {

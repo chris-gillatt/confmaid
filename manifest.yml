@@ -16,7 +16,7 @@ resources:
 
 app:
   runtime:
-    name: nodejs22.x
+    name: nodejs24.x
   id: ari:cloud:ecosystem::app/0b3b5533-2d59-473d-a8c3-bc2d3705e736
 
 permissions:

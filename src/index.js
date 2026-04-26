@@ -14,7 +14,7 @@ function buildForgeDefinitions() {
   try {
     const resolverModule = require("@forge/resolver");
     ResolverCtor = resolverModule.default || resolverModule.Resolver || resolverModule;
-  } catch (_error) {
+  } catch {
     return localHandler;
   }
 

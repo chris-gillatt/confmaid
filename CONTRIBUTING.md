@@ -48,8 +48,8 @@ Container-first development is recommended.
 ```bash
 podman machine init
 podman machine start
-podman build -f Containerfile.dev -t confmaid-dev:node20 .
-podman run --rm -it -v "$PWD":/workspace:Z -w /workspace confmaid-dev:node20
+podman build -f Containerfile.dev -t confmaid-dev:node24 .
+podman run --rm -it -v "$PWD":/workspace:Z -w /workspace confmaid-dev:node24
 ```
 
 Run tests:

@@ -85,7 +85,7 @@ podman machine start
 ### 1) Build the development image
 
 ```bash
-podman build -f Containerfile.dev -t confmaid-dev:node20 .
+podman build -f Containerfile.dev -t confmaid-dev:node24 .
 ```
 
 ### 2) Start a shell in the project container
@@ -94,7 +94,7 @@ podman build -f Containerfile.dev -t confmaid-dev:node20 .
 podman run --rm -it \
 	-v "$PWD":/workspace:Z \
 	-w /workspace \
-	confmaid-dev:node20
+	confmaid-dev:node24
 ```
 
 ### 3) Run tests in the container
@@ -128,8 +128,8 @@ After `forge register`, replace the app id placeholder in `manifest.yml`.
 If you do not want to use Podman, install Node and npm directly on macOS:
 
 ```bash
-brew install node@20
-echo 'export PATH="/opt/homebrew/opt/node@20/bin:$PATH"' >> ~/.zshrc
+brew install node@24
+echo 'export PATH="/opt/homebrew/opt/node@24/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 node --version
 npm --version
@@ -146,6 +146,13 @@ forge --version
 
 ```bash
 node --test
+```
+
+### Lint and format checks
+
+```bash
+npm run lint
+npm run format:check
 ```
 
 The suite now includes a resolver contract integration-style lifecycle test (`tests/macroLifecycle.integration.test.js`) for insert/save/reopen/edit/render flows.

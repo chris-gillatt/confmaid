@@ -23,7 +23,12 @@
 
       body {
         margin: 0;
-        font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family:
+          ui-sans-serif,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
         background: radial-gradient(circle at 0% 0%, #fffdf7, var(--bg));
         color: var(--ink);
       }
@@ -160,10 +165,12 @@
           <label for="title">Diagram title</label>
           <input id="title" type="text" value="Mermaid diagram" maxlength="120" />
         </div>
-        <textarea id="source">flowchart TD
+        <textarea id="source">
+flowchart TD
   A[User opens page] --> B[Insert Confmaid macro]
   B --> C[Paste Mermaid source]
-  C --> D[Render diagram]</textarea>
+  C --> D[Render diagram]</textarea
+        >
         <div class="actions">
           <button id="loadBtn" type="button" class="secondary">Load Saved</button>
           <button id="saveBtn" type="button">Save Config</button>

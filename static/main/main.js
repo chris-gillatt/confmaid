@@ -38,7 +38,7 @@ function readLocalConfig() {
   try {
     const raw = localStorage.getItem(LOCAL_CONFIG_KEY);
     return raw ? JSON.parse(raw) : null;
-  } catch (_error) {
+  } catch {
     return null;
   }
 }
@@ -46,7 +46,7 @@ function readLocalConfig() {
 function writeLocalConfig(config) {
   try {
     localStorage.setItem(LOCAL_CONFIG_KEY, JSON.stringify(config));
-  } catch (_error) {
+  } catch {
     // Ignore storage exceptions and continue with in-memory behaviour.
   }
 }
@@ -143,10 +143,11 @@ async function invokeLocal(operation, payload = {}) {
   }
 
   if (operation === "renderFromMacroConfig") {
-    const macroConfig = payload.macroConfig || readLocalConfig() || {
-      title: DEFAULT_TITLE,
-      source: EXAMPLE_SOURCE,
-    };
+    const macroConfig = payload.macroConfig ||
+      readLocalConfig() || {
+        title: DEFAULT_TITLE,
+        source: EXAMPLE_SOURCE,
+      };
     return {
       ok: true,
       operation,

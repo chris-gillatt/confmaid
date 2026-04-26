@@ -204,8 +204,10 @@ async function loadMermaid() {
   }
 
   try {
-    const module = await import("https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs");
-    mermaid = module.default;
+    mermaid = window.__CONFMAID_MERMAID__;
+    if (!mermaid) {
+      throw new Error("Local Mermaid runtime is unavailable.");
+    }
     mermaid.initialize({
       startOnLoad: false,
       securityLevel: "strict",

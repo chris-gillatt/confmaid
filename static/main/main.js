@@ -298,6 +298,10 @@ function applyMermaidSvgFallbackStyles(svgElement) {
   }
 
   // Sequence diagrams use different class names than flowcharts.
+  setShape(".actor");
+  setShape(".actor-bottom");
+  setShape(".labelBox");
+
   for (const line of svgElement.querySelectorAll(
     ".messageLine0, .messageLine1, line.messageLine0, line.messageLine1, .signal-line, .actor-line",
   )) {
@@ -308,6 +312,16 @@ function applyMermaidSvgFallbackStyles(svgElement) {
 
   for (const dashedReturn of svgElement.querySelectorAll(".messageLine1, line.messageLine1")) {
     dashedReturn.setAttribute("stroke-dasharray", "3,3");
+  }
+
+  for (const participantLabel of svgElement.querySelectorAll("g.actor text, text.actor, text.actor-man")) {
+    participantLabel.setAttribute("text-anchor", "middle");
+    participantLabel.setAttribute("dominant-baseline", "middle");
+    participantLabel.setAttribute("font-weight", "500");
+  }
+
+  for (const seqLabel of svgElement.querySelectorAll("text.messageText, text.labelText, text.loopText")) {
+    seqLabel.setAttribute("font-weight", "500");
   }
 
   for (const arrow of svgElement.querySelectorAll(".arrowheadPath, marker path")) {

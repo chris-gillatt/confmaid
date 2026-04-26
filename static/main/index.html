@@ -8,9 +8,9 @@
   </head>
   <body>
     <main class="layout">
-      <section class="panel">
+      <section class="panel source-panel">
         <h2>Mermaid Source</h2>
-        <div class="runtime-info">
+        <div class="runtime-info edit-actions">
           <strong>Runtime version:</strong>
           <span id="runtimeVersion">Loading...</span>
         </div>
@@ -18,24 +18,31 @@
           <label for="title">Diagram title</label>
           <input id="title" type="text" value="Mermaid diagram" maxlength="120" />
         </div>
+        <div class="field edit-actions">
+          <label for="displayMode">Display mode</label>
+          <select id="displayMode">
+            <option value="standard">Standard — diagram only in page view</option>
+            <option value="dual">Dual — source and diagram in page view</option>
+          </select>
+        </div>
         <textarea id="source" rows="10">
 flowchart TD
   A[User opens page] --> B[Insert Confmaid macro]
   B --> C[Paste Mermaid source]
   C --> D[Render diagram]</textarea
         >
-        <div class="actions">
-          <button id="loadBtn" type="button" class="secondary">Load Saved</button>
-          <button id="saveBtn" type="button">Save Config</button>
+        <div class="actions edit-actions">
+          <button id="loadBtn" type="button" class="secondary">Revert</button>
+          <button id="saveBtn" type="button">Save to Macro</button>
           <button id="validateBtn" type="button" class="warning">Validate</button>
           <button id="renderBtn" type="button">Render Preview</button>
           <button id="resetBtn" type="button" class="secondary">Reset Example</button>
         </div>
-        <div id="status" class="status">Ready.</div>
-        <ul id="diagnostics"></ul>
+        <div id="status" class="status edit-actions">Ready.</div>
+        <ul id="diagnostics" class="edit-actions"></ul>
       </section>
 
-      <section class="panel">
+      <section class="panel preview-panel">
         <h2>Preview</h2>
         <div id="preview" aria-live="polite"></div>
       </section>

@@ -14,6 +14,7 @@ const sourceEl = document.getElementById("source");
 const titleEl = document.getElementById("title");
 const diagnosticsEl = document.getElementById("diagnostics");
 const runtimeVersionEl = document.getElementById("runtimeVersion");
+const displayModeEl = document.getElementById("displayMode");
 const loadBtn = document.getElementById("loadBtn");
 const saveBtn = document.getElementById("saveBtn");
 const validateBtn = document.getElementById("validateBtn");
@@ -43,12 +44,47 @@ function getConfigFromUI() {
   return {
     title: titleEl.value || DEFAULT_TITLE,
     source: sourceEl.value || "",
+    displayMode: displayModeEl?.value || "standard",
   };
 }
 
 function applyConfigToUI(config = {}) {
   titleEl.value = config.title || DEFAULT_TITLE;
   sourceEl.value = config.source || EXAMPLE_SOURCE;
+  if (displayModeEl) {
+    displayModeEl.value = config.displayMode || "standard";
+  }
+}
+
+async function getForgeContext() {
+  try {
+    if (typeof window.__FORGE_BRIDGE_VIEW__?.getContext === "function") {
+      return await window.__FORGE_BRIDGE_VIEW__.getContext();
+    }
+  } catch {
+    // Fall through to local dev fallback.
+  }
+  // Local dev fallback: treat as edit mode with any locally stored config.
+  return {
+    extension: {
+      isEditing: true,
+      macro: {
+        config: readLocalConfig() || {},
+      },
+    },
+  };
+}
+
+async function submitMacroConfig(config) {
+  try {
+    if (typeof window.__FORGE_BRIDGE_VIEW__?.submit === "function") {
+      await window.__FORGE_BRIDGE_VIEW__.submit(config);
+      return;
+    }
+  } catch {
+    // Fall through to local dev fallback.
+  }
+  writeLocalConfig(config);
 }
 
 function readLocalConfig() {
@@ -143,6 +179,7 @@ async function invokeLocal(operation, payload = {}) {
     const macroConfig = {
       title: (payload.macroConfig?.title || DEFAULT_TITLE).trim() || DEFAULT_TITLE,
       source: payload.macroConfig?.source || "",
+      displayMode: payload.macroConfig?.displayMode === "dual" ? "dual" : "standard",
       updatedAt: new Date().toISOString(),
     };
     writeLocalConfig(macroConfig);
@@ -159,6 +196,7 @@ async function invokeLocal(operation, payload = {}) {
     const macroConfig = readLocalConfig() || {
       title: DEFAULT_TITLE,
       source: EXAMPLE_SOURCE,
+      displayMode: "standard",
     };
     return {
       ok: true,
@@ -328,8 +366,9 @@ async function loadMacroConfig() {
 async function saveMacroConfig() {
   setStatus("warn", "Saving configuration...");
 
+  const config = getConfigFromUI();
   const response = await invokeViaAdapter("saveMacroConfig", {
-    macroConfig: getConfigFromUI(),
+    macroConfig: config,
   });
 
   if (!response?.ok) {
@@ -337,7 +376,10 @@ async function saveMacroConfig() {
     return;
   }
 
-  setStatus("ok", "Configuration saved.");
+  // Persist config into Confluence content via view.submit().
+  // This is the standard macro UX — the dialog closes after submit.
+  setStatus("ok", "Saving to macro...");
+  await submitMacroConfig(config);
 }
 
 async function validateSource() {
@@ -385,8 +427,29 @@ async function bootstrap() {
     setStatus("warn", "Running with local invoke fallback.");
   }
 
-  await loadMacroConfig();
-  await renderSource();
+  const context = await getForgeContext();
+  const isEditing = context?.extension?.isEditing ?? true;
+  const contextConfig = context?.extension?.macro?.config || {};
+
+  if (isEditing) {
+    document.body.classList.add("mode-edit");
+    await loadMacroConfig();
+    await renderSource();
+  } else {
+    document.body.classList.add("mode-view");
+    const displayMode = contextConfig.displayMode || "standard";
+    if (displayMode === "dual") {
+      document.body.classList.add("display-dual");
+      sourceEl.setAttribute("readonly", "");
+      titleEl.setAttribute("readonly", "");
+    }
+    if (contextConfig.source) {
+      applyConfigToUI(contextConfig);
+      await renderSource();
+    } else {
+      previewEl.innerHTML = '<p class="view-placeholder">No diagram configured\u2014edit this page to add one.</p>';
+    }
+  }
 }
 
 bootstrap();

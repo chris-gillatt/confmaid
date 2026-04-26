@@ -2,6 +2,8 @@
 
 Confmaid is a Confluence Cloud Forge app project for authoring and rendering Mermaid diagrams inside Confluence pages.
 
+![confmaid](./images/confmaid-logo.png)
+
 ## Licence
 
 This project is licensed under the MIT Licence. See `LICENSE`.

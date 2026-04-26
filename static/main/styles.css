@@ -164,3 +164,49 @@ button.warning {
 #diagnostics li + li {
   margin-top: 4px;
 }
+
+/* --- Display modes --- */
+
+/* Standard Mode (default): hide source panel in page view */
+body.mode-view .source-panel {
+  display: none;
+}
+
+/* Dual Mode: show source panel but hide action controls */
+body.mode-view.display-dual .source-panel {
+  display: block;
+}
+
+body.mode-view .edit-actions {
+  display: none;
+}
+
+/* Dual Mode: read-only visual cue for source and title */
+body.mode-view.display-dual #source,
+body.mode-view.display-dual #title {
+  pointer-events: none;
+  background: #f8f7f4;
+  opacity: 0.85;
+  resize: none;
+  cursor: default;
+}
+
+/* Select for display mode */
+.field select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  background: #fff;
+}
+
+/* Placeholder shown in page view when no diagram is configured */
+.view-placeholder {
+  padding: 24px;
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 13px;
+  text-align: center;
+  margin: 0;
+}

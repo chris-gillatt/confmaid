@@ -29,10 +29,12 @@ function sanitiseTitle(title) {
 function buildMacroConfig(input = {}) {
   const source = normaliseSource(input.source || DEFAULT_SOURCE);
   const title = sanitiseTitle(input.title);
+  const displayMode = input.displayMode === "dual" ? "dual" : "standard";
 
   return {
     source,
     title,
+    displayMode,
     sourceLength: source.length,
     updatedAt: new Date().toISOString(),
   };

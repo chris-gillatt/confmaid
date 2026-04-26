@@ -82,7 +82,40 @@ test("resolver saveMacroConfig returns macro config and rendered payload", async
   assert.equal(response.ok, true);
   assert.equal(response.operation, "saveMacroConfig");
   assert.equal(response.result.macroConfig.title, "Flow");
+  assert.equal(response.result.macroConfig.displayMode, "standard");
   assert.equal(response.result.rendered.ok, true);
+});
+
+test("resolver saveMacroConfig preserves dual displayMode", async () => {
+  const response = await localHandler({
+    payload: {
+      operation: "saveMacroConfig",
+      macroConfig: {
+        source: "flowchart TD\nA-->B",
+        title: "Dual flow",
+        displayMode: "dual",
+      },
+    },
+  });
+
+  assert.equal(response.ok, true);
+  assert.equal(response.result.macroConfig.displayMode, "dual");
+});
+
+test("resolver saveMacroConfig rejects unknown displayMode", async () => {
+  const response = await localHandler({
+    payload: {
+      operation: "saveMacroConfig",
+      macroConfig: {
+        source: "flowchart TD\nA-->B",
+        title: "Test",
+        displayMode: "invalid",
+      },
+    },
+  });
+
+  assert.equal(response.ok, true);
+  assert.equal(response.result.macroConfig.displayMode, "standard");
 });
 
 test("saveMacroConfig supports Forge request object in handler call", async () => {

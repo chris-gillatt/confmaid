@@ -3,23 +3,6 @@ const { renderMacroPayload } = require("./lib/macroRenderer");
 const { validateMermaidSource } = require("./lib/mermaidValidation");
 const packageJson = require("../package.json");
 
-// Forge Storage is only available inside the deployed Forge runtime.
-// FORGE_APP_ID is set by the platform; guard on it so tests skip storage.
-let storage = null;
-try {
-  if (process.env.FORGE_APP_ID) {
-    ({ storage } = require("@forge/api"));
-  }
-} catch {
-  // @forge/api unavailable — storage remains null.
-}
-
-function storageKey(context) {
-  const contentId = context?.extension?.content?.id || "unknown-content";
-  const macroId = context?.extension?.localId || context?.extension?.macro?.id || "unknown-macro";
-  return `macroConfig:${contentId}:${macroId}`;
-}
-
 function resolveInvocationInput(firstArg = {}, secondArg = {}) {
   if (
     firstArg &&
@@ -106,26 +89,9 @@ async function render(firstArg = {}, secondArg = {}) {
 
 async function loadMacroConfig(firstArg = {}, secondArg = {}) {
   const { payload, context } = resolveInvocationInput(firstArg, secondArg);
-
-  // 1. Prefer Forge Storage (the canonical persistence store).
-  if (storage) {
-    try {
-      const saved = await storage.get(storageKey(context));
-      if (saved) {
-        return {
-          ok: true,
-          operation: "loadMacroConfig",
-          result: { macroConfig: buildMacroConfig(saved) },
-        };
-      }
-    } catch {
-      // Storage read failed — fall through to context params.
-    }
-  }
-
-  // 2. Fall back to config passed inline (test / local dev).
   const storedConfig =
     payload.macroConfig ||
+    context.extension?.config ||
     context.extension?.macro?.parameters ||
     context.extension?.macro?.config ||
     {};
@@ -140,7 +106,7 @@ async function loadMacroConfig(firstArg = {}, secondArg = {}) {
 }
 
 async function saveMacroConfig(firstArg = {}, secondArg = {}) {
-  const { payload, context } = resolveInvocationInput(firstArg, secondArg);
+  const { payload } = resolveInvocationInput(firstArg, secondArg);
   const macroConfig = buildMacroConfig(payload.macroConfig || payload);
   const limitCheck = validateConfigLimits(macroConfig);
 
@@ -151,20 +117,6 @@ async function saveMacroConfig(firstArg = {}, secondArg = {}) {
       errors: limitCheck.errors,
       result: { macroConfig },
     };
-  }
-
-  // Persist to Forge Storage so config survives page save/reload.
-  if (storage) {
-    try {
-      await storage.set(storageKey(context), macroConfig);
-    } catch {
-      return {
-        ok: false,
-        operation: "saveMacroConfig",
-        errors: ["Failed to persist configuration. Please try again."],
-        result: { macroConfig },
-      };
-    }
   }
 
   const rendered = renderMacroPayload(macroConfig.source);

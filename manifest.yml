@@ -4,6 +4,9 @@ modules:
       title: Confmaid Mermaid Diagram
       description: Render Mermaid diagrams from text inside Confluence pages.
       resource: main
+      config:
+        resource: main
+        openOnInsert: true
       resolver:
         function: resolver
   function:

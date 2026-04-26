@@ -23,6 +23,7 @@ const resetBtn = document.getElementById("resetBtn");
 
 let mermaid;
 let invokeOperation;
+let latestSavedConfig = null;
 
 function setRuntimeVersionText(buildInfo = {}) {
   if (!runtimeVersionEl) {
@@ -68,16 +69,22 @@ async function getForgeContext() {
   return {
     extension: {
       isEditing: true,
+      config: readLocalConfig() || {},
       macro: {
+        isConfiguring: true,
         config: readLocalConfig() || {},
       },
     },
   };
 }
 
-// view.submit() only works in a Forge macro config-panel dialog.
-// For an inline Custom UI macro we persist via the resolver (Forge Storage)
-// instead. Config is written to storage on save and read back on load.
+async function submitMacroConfig(config, keepEditing = true) {
+  if (typeof window.__FORGE_BRIDGE_VIEW__?.submit === "function") {
+    await window.__FORGE_BRIDGE_VIEW__.submit({ config, keepEditing });
+    return;
+  }
+  writeLocalConfig(config);
+}
 
 function readLocalConfig() {
   try {
@@ -349,9 +356,14 @@ async function renderSource() {
 
 async function loadMacroConfig() {
   setStatus("warn", "Loading saved configuration...");
-  const response = await invokeViaAdapter("loadMacroConfig", {});
-  const macroConfig = response?.result?.macroConfig || {};
+  const context = await getForgeContext();
+  const macroConfig =
+    context?.extension?.config ||
+    context?.extension?.macro?.config ||
+    context?.extension?.macro?.parameters ||
+    {};
   applyConfigToUI(macroConfig);
+  latestSavedConfig = getConfigFromUI();
   setStatus("ok", "Configuration loaded.");
 }
 
@@ -369,7 +381,8 @@ async function saveMacroConfig() {
     return;
   }
 
-  // Also persist locally so Revert works in the same session.
+  await submitMacroConfig(config, true);
+  latestSavedConfig = config;
   writeLocalConfig(config);
   setStatus("ok", "Saved.");
 }
@@ -401,6 +414,12 @@ saveBtn.addEventListener("click", () => {
 });
 
 loadBtn.addEventListener("click", () => {
+  if (latestSavedConfig) {
+    applyConfigToUI(latestSavedConfig);
+    setStatus("ok", "Reverted to last saved configuration.");
+    renderSource();
+    return;
+  }
   loadMacroConfig().then(() => renderSource());
 });
 
@@ -420,19 +439,16 @@ async function bootstrap() {
   }
 
   const context = await getForgeContext();
-  const isEditing = context?.extension?.isEditing ?? true;
-  const contextConfig = context?.extension?.macro?.config || {};
+  const isConfiguring = context?.extension?.macro?.isConfiguring ?? false;
 
-  if (isEditing) {
-    document.body.classList.add("mode-edit");
+  if (isConfiguring) {
+    document.body.classList.add("mode-config");
     await loadMacroConfig();
     await renderSource();
   } else {
     document.body.classList.add("mode-view");
-    // Load config from Forge Storage via resolver.
-    const configResponse = await invokeViaAdapter("loadMacroConfig", {});
-    const savedConfig = configResponse?.result?.macroConfig || {};
-    const displayMode = savedConfig.displayMode || contextConfig.displayMode || "standard";
+    const savedConfig = context?.extension?.config || context?.extension?.macro?.config || {};
+    const displayMode = savedConfig.displayMode || "standard";
     if (displayMode === "dual") {
       document.body.classList.add("display-dual");
       sourceEl.setAttribute("readonly", "");

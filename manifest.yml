@@ -1,15 +1,14 @@
 modules:
-  confluence:macro:
+  macro:
     - key: confmaid-mermaid-macro
       title: Confmaid Mermaid Diagram
       description: Render Mermaid diagrams from text inside Confluence pages.
       resource: main
       resolver:
         function: resolver
-
-function:
-  - key: resolver
-    handler: src/index.handler
+  function:
+    - key: resolver
+      handler: index.handler
 
 resources:
   - key: main
@@ -17,9 +16,8 @@ resources:
 
 app:
   runtime:
-    name: nodejs20.x
-  # Replace after `forge register`.
-  id: ari:cloud:ecosystem::app/REPLACE_WITH_FORGE_APP_ID
+    name: nodejs22.x
+  id: ari:cloud:ecosystem::app/0b3b5533-2d59-473d-a8c3-bc2d3705e736
 
 permissions:
   scopes:

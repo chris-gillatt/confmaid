@@ -1,41 +1,33 @@
-const { validateMermaidSource } = require("./lib/mermaidValidation");
-const { renderMacroPayload } = require("./lib/macroRenderer");
+const handlers = require("./resolverHandlers");
 
-/**
- * Initial resolver handler scaffold.
- *
- * This shape allows us to validate Mermaid source before wiring full Forge UI
- * resources and macro configuration persistence.
- */
-async function handler(request) {
+async function localHandler(request) {
   const payload = request?.payload || {};
+  const context = request?.context || {};
   const operation = payload.operation || "healthcheck";
+  const operationHandler = handlers[operation] || handlers.healthcheck;
 
-  if (operation === "validate") {
-    const source = payload.source || "";
-    return {
-      ok: true,
-      operation,
-      result: validateMermaidSource(source),
-    };
+  return operationHandler(payload, context);
+}
+
+function buildForgeDefinitions() {
+  let Resolver;
+  try {
+    ({ Resolver } = require("@forge/resolver"));
+  } catch (_error) {
+    return localHandler;
   }
 
-  if (operation === "render") {
-    const source = payload.source || "";
-    return {
-      ok: true,
-      operation,
-      result: renderMacroPayload(source),
-    };
-  }
-
-  return {
-    ok: true,
-    operation,
-    message: "Confmaid resolver is reachable.",
-  };
+  const resolver = new Resolver();
+  resolver.define("healthcheck", handlers.healthcheck);
+  resolver.define("validate", handlers.validate);
+  resolver.define("render", handlers.render);
+  resolver.define("loadMacroConfig", handlers.loadMacroConfig);
+  resolver.define("saveMacroConfig", handlers.saveMacroConfig);
+  resolver.define("renderFromMacroConfig", handlers.renderFromMacroConfig);
+  return resolver.getDefinitions();
 }
 
 module.exports = {
-  handler,
+  handler: buildForgeDefinitions(),
+  localHandler,
 };

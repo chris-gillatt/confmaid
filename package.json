@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "description": "Confluence Mermaid integration project foundation",
+  "dependencies": {
+    "@forge/resolver": "^1.7.0"
+  },
   "scripts": {
     "test": "node --test"
   },

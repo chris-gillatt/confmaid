@@ -15,7 +15,9 @@ Confmaid is a Confluence Cloud Forge app project for authoring and rendering Mer
 - `src/lib/mermaidValidation.js`: Mermaid source validation utilities
 - `src/lib/htmlSafety.js`: HTML escaping utility for untrusted source
 - `src/lib/macroRenderer.js`: safe macro payload rendering helper
-- `src/index.js`: resolver operations (`healthcheck`, `validate`, `render`)
+- `src/lib/macroConfig.js`: macro config normalisation and persistence contract helpers
+- `src/resolverHandlers.js`: Forge operation handlers for macro lifecycle actions
+- `src/index.js`: Forge resolver entrypoint with local test fallback
 - `tests/mermaidValidation.test.js`: baseline unit tests for validator behaviour
 - `static/main/index.html`: macro editor and preview scaffold UI
 - `static/main/main.js`: Mermaid runtime load and render interaction logic
@@ -31,10 +33,13 @@ The resolver currently supports these payload operations:
 - `healthcheck`: basic connectivity response
 - `validate`: validates Mermaid input and returns diagnostics
 - `render`: validates then returns safe macro HTML payload with escaped source
+- `loadMacroConfig`: returns normalised macro config for editor hydration
+- `saveMacroConfig`: validates and returns persisted config plus rendered preview payload
+- `renderFromMacroConfig`: renders using saved macro config source
 
 ## Local Development (Current)
 
-This repository currently contains foundational implementation and tests for Mermaid input validation. Forge app wiring is the next step.
+This repository now contains a Forge-aligned resolver baseline with macro configuration load/save/render contracts and tests. UI-to-resolver invocation wiring is the next step.
 
 ### Prerequisites
 
@@ -120,7 +125,7 @@ forge register
 
 ## Next Implementation Steps
 
-1. Scaffold Forge app modules (`manifest.yml`, macro module, resolver, UI resource).
-2. Integrate validator into macro configuration and save flow.
-3. Add rendering path and editor-side preview flow.
-4. Add security and integration test suites.
+1. Wire static editor actions to resolver invokes in the Forge Custom UI bridge.
+2. Persist macro configuration via Confluence macro edit/save cycle and reload flow.
+3. Add integration tests around end-to-end insert/edit/save/reopen behaviour.
+4. Add security and performance test suites.

@@ -3,12 +3,15 @@ const { renderMacroPayload } = require("./lib/macroRenderer");
 const { validateMermaidSource } = require("./lib/mermaidValidation");
 const packageJson = require("../package.json");
 
-// Forge Storage is only available in the deployed runtime.
+// Forge Storage is only available inside the deployed Forge runtime.
+// FORGE_APP_ID is set by the platform; guard on it so tests skip storage.
 let storage = null;
 try {
-  ({ storage } = require("@forge/api"));
+  if (process.env.FORGE_APP_ID) {
+    ({ storage } = require("@forge/api"));
+  }
 } catch {
-  // Local/test environment — storage unavailable, fall back to context params.
+  // @forge/api unavailable — storage remains null.
 }
 
 function storageKey(context) {

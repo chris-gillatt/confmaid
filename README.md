@@ -1,4 +1,5 @@
 # Confmaid - Mermaid Diagrams for Confluence
+# Note - this is a work in progress and is not ready for distribution or use.  I'll publish a package once it's ready.  You have been warned.
 
 [![dependabot_auto_merge](https://github.com/chris-gillatt/confmaid/actions/workflows/dependency-check.yml/badge.svg)](https://github.com/chris-gillatt/confmaid/actions/workflows/dependency-check.yml)
 

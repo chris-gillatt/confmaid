@@ -6,14 +6,6 @@ Confmaid is a Confluence Cloud Forge app project for authoring and rendering Mer
 
 This project is licensed under the MIT Licence. See `LICENSE`.
 
-## Test Environment
-
-- Confluence test site: `https://tucan.atlassian.net`
-- Test space: `HOME`
-- Seed test page created: `confmaid`
-
-The test page currently includes two Mermaid code samples (flowchart and sequence) for iterative plugin testing.
-
 ## Current Scope
 
 - Platform: Confluence Cloud (Forge)

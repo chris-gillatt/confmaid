@@ -13,6 +13,7 @@ const previewEl = document.getElementById("preview");
 const sourceEl = document.getElementById("source");
 const titleEl = document.getElementById("title");
 const diagnosticsEl = document.getElementById("diagnostics");
+const runtimeVersionEl = document.getElementById("runtimeVersion");
 const loadBtn = document.getElementById("loadBtn");
 const saveBtn = document.getElementById("saveBtn");
 const validateBtn = document.getElementById("validateBtn");
@@ -21,6 +22,22 @@ const resetBtn = document.getElementById("resetBtn");
 
 let mermaid;
 let invokeOperation;
+
+function setRuntimeVersionText(buildInfo = {}) {
+  if (!runtimeVersionEl) {
+    return;
+  }
+
+  const packageVersion = buildInfo.packageVersion || "unknown";
+  const deploymentVersion = buildInfo.deploymentVersion;
+
+  if (deploymentVersion) {
+    runtimeVersionEl.textContent = `deployed ${deploymentVersion} (package ${packageVersion})`;
+    return;
+  }
+
+  runtimeVersionEl.textContent = `package ${packageVersion} (deployment version unavailable in context)`;
+}
 
 function getConfigFromUI() {
   return {
@@ -105,7 +122,17 @@ function localValidate(source) {
 
 async function invokeLocal(operation, payload = {}) {
   if (operation === "healthcheck") {
-    return { ok: true, operation, message: "Local adapter ready." };
+    return {
+      ok: true,
+      operation,
+      message: "Local adapter ready.",
+      result: {
+        buildInfo: {
+          packageVersion: "local",
+          deploymentVersion: null,
+        },
+      },
+    };
   }
 
   if (operation === "validate") {
@@ -217,7 +244,7 @@ function applyMermaidSvgFallbackStyles(svgElement) {
   setShape(".cluster rect");
   setShape(".cluster polygon");
 
-  for (const edge of svgElement.querySelectorAll("path.path")) {
+  for (const edge of svgElement.querySelectorAll(".edgePath path, path.path, .flowchart-link, g.edge path")) {
     edge.setAttribute("fill", "none");
     edge.setAttribute("stroke", "#1f2937");
     edge.setAttribute("stroke-width", "1.6");
@@ -353,6 +380,7 @@ async function bootstrap() {
   invokeOperation = await createInvokeAdapter(invokeLocal);
 
   const probe = await invokeOperation("healthcheck", {});
+  setRuntimeVersionText(probe?.result?.buildInfo || {});
   if (probe?.message && probe.message.includes("Local")) {
     setStatus("warn", "Running with local invoke fallback.");
   }

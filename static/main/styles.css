@@ -56,6 +56,14 @@ body {
   background: #fcfbf8;
 }
 
+.runtime-info {
+  padding: 8px 12px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  background: #fffdf7;
+  color: #374151;
+}
+
 .field {
   display: grid;
   gap: 6px;

@@ -7,6 +7,8 @@ test("resolver healthcheck operation responds", async () => {
   const response = await localHandler({ payload: {} });
   assert.equal(response.ok, true);
   assert.equal(response.operation, "healthcheck");
+  assert.equal(typeof response.result.buildInfo.packageVersion, "string");
+  assert.ok("deploymentVersion" in response.result.buildInfo);
 });
 
 test("resolver validate operation returns validation result", async () => {

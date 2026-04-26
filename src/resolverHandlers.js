@@ -1,6 +1,7 @@
 const { buildMacroConfig, validateConfigLimits } = require("./lib/macroConfig");
 const { renderMacroPayload } = require("./lib/macroRenderer");
 const { validateMermaidSource } = require("./lib/mermaidValidation");
+const packageJson = require("../package.json");
 
 function resolveInvocationInput(firstArg = {}, secondArg = {}) {
   if (
@@ -21,11 +22,48 @@ function resolveInvocationInput(firstArg = {}, secondArg = {}) {
   };
 }
 
-async function healthcheck() {
+function getFromPath(input, path) {
+  return path.reduce((current, segment) => {
+    if (current && typeof current === "object" && segment in current) {
+      return current[segment];
+    }
+    return undefined;
+  }, input);
+}
+
+function extractDeploymentVersion(context = {}) {
+  const candidates = [
+    ["appVersion"],
+    ["environment", "appVersion"],
+    ["installation", "appVersion"],
+    ["extension", "app", "appVersion"],
+    ["extension", "appVersion"],
+  ];
+
+  for (const path of candidates) {
+    const value = getFromPath(context, path);
+    if (value !== undefined && value !== null && value !== "") {
+      return String(value);
+    }
+  }
+
+  return null;
+}
+
+async function healthcheck(firstArg = {}, secondArg = {}) {
+  const { context } = resolveInvocationInput(firstArg, secondArg);
+  const deploymentVersion = extractDeploymentVersion(context);
+
   return {
     ok: true,
     operation: "healthcheck",
     message: "Confmaid resolver is reachable.",
+    result: {
+      buildInfo: {
+        packageVersion: packageJson.version,
+        deploymentVersion,
+      },
+    },
   };
 }
 

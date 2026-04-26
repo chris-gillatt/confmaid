@@ -54,6 +54,16 @@ The resolver currently supports these payload operations:
 
 This repository now contains a Forge-aligned resolver baseline with macro configuration load/save/render contracts and tests. UI-to-resolver invocation wiring is the next step.
 
+### Environment Setup
+
+Create your local environment file from the template:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Then fill in real values for Confluence credentials and base URL.
+
 ### Prerequisites
 
 - Podman (recommended)
@@ -146,6 +156,10 @@ The suite now includes a resolver contract integration-style lifecycle test (`te
 forge login
 forge register
 ```
+
+## Dependency Automation
+
+Dependabot is enabled via `.github/dependabot.yml` for weekly npm and GitHub Actions update pull requests.
 
 ## Next Implementation Steps
 

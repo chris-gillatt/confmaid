@@ -4,17 +4,19 @@
   "private": true,
   "description": "Confluence Mermaid integration project foundation",
   "dependencies": {
-    "@forge/bridge": "^4.5.0",
+    "@forge/bridge": "^5.15.1",
     "@forge/resolver": "^1.7.0",
     "mermaid": "^11.12.0"
   },
   "devDependencies": {
-    "esbuild": "^0.24.2",
-    "eslint": "^9.25.1",
+    "esbuild": "^0.28.0",
+    "eslint": "^10.2.1",
     "prettier": "^3.5.3"
   },
   "scripts": {
     "build:ui": "node tools/build-ui.mjs",
+    "deps:check": "npm outdated",
+    "deps:update": "npx npm-check-updates -u && npm install",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",

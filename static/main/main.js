@@ -198,6 +198,42 @@ function setDiagnostics(result = {}) {
   diagnosticsEl.innerHTML = items.join("");
 }
 
+function applyMermaidSvgFallbackStyles(svgElement) {
+  if (!svgElement) {
+    return;
+  }
+
+  const setShape = (selector) => {
+    for (const node of svgElement.querySelectorAll(selector)) {
+      node.setAttribute("fill", "#ffffff");
+      node.setAttribute("stroke", "#1f2937");
+      node.setAttribute("stroke-width", "1.5");
+    }
+  };
+
+  setShape(".node rect");
+  setShape(".node polygon");
+  setShape(".node path");
+  setShape(".cluster rect");
+  setShape(".cluster polygon");
+
+  for (const edge of svgElement.querySelectorAll("path.path")) {
+    edge.setAttribute("fill", "none");
+    edge.setAttribute("stroke", "#1f2937");
+    edge.setAttribute("stroke-width", "1.6");
+  }
+
+  for (const arrow of svgElement.querySelectorAll(".arrowheadPath, marker path")) {
+    arrow.setAttribute("fill", "#1f2937");
+    arrow.setAttribute("stroke", "#1f2937");
+  }
+
+  for (const label of svgElement.querySelectorAll("text, tspan, .nodeLabel, .label")) {
+    label.setAttribute("fill", "#111827");
+    label.setAttribute("font-family", "ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif");
+  }
+}
+
 async function loadMermaid() {
   if (mermaid) {
     return mermaid;
@@ -246,6 +282,7 @@ async function renderSource() {
     const id = `confmaid-preview-${Date.now()}`;
     const { svg } = await m.render(id, source);
     previewEl.innerHTML = svg;
+    applyMermaidSvgFallbackStyles(previewEl.querySelector("svg"));
     setStatus("ok", "Preview rendered.");
   } catch (error) {
     previewEl.innerHTML = "";

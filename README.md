@@ -168,6 +168,36 @@ forge register
 
 Dependabot is enabled via `.github/dependabot.yml` for weekly npm and GitHub Actions update pull requests.
 
+### Manual npm dependency maintenance
+
+Check outdated packages:
+
+```bash
+npm run deps:check
+```
+
+Update package.json ranges to latest versions and refresh the lockfile:
+
+```bash
+npm run deps:update
+```
+
+Then validate the project:
+
+```bash
+npm run lint
+npm test
+```
+
+Container-first equivalent:
+
+```bash
+podman run --rm -v "$PWD":/workspace:Z -w /workspace confmaid-dev:node24 npm run deps:check
+podman run --rm -v "$PWD":/workspace:Z -w /workspace confmaid-dev:node24 npm run deps:update
+podman run --rm -v "$PWD":/workspace:Z -w /workspace confmaid-dev:node24 npm run lint
+podman run --rm -v "$PWD":/workspace:Z -w /workspace confmaid-dev:node24 npm test
+```
+
 ## Next Implementation Steps
 
 1. Deploy and install Forge app on the HOME space test site.

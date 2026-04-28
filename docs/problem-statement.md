@@ -57,9 +57,67 @@ Confluence users need a reliable way to create and maintain diagrams as text so 
 ### Post-MVP
 
 - Live preview while editing.
-- Extended diagram coverage (state, ERD, gantt, pie, journey, gitGraph).
+- Extended diagram coverage (see Section 13 for phased type rollout).
 - Export helpers.
 - Accessibility and performance hardening.
+
+## 13. Mermaid Diagram Type Rollout
+
+Mermaid supports a broad and growing set of diagram types. Confmaid introduces them in phases to manage testing scope, validation complexity, and rendering edge cases.
+
+### Phase 1 — MVP (current)
+
+| Type      | Mermaid keyword   | Notes                                            |
+| --------- | ----------------- | ------------------------------------------------ |
+| Flowchart | `flowchart`       | LR/TD/RL/BT direction; well-tested, widely used  |
+| Sequence  | `sequenceDiagram` | Participant/actor flow; tested with SVG fallback |
+| Class     | `classDiagram`    | OOP relationships; stable renderer               |
+
+### Phase 2 — Extended Core (next planned)
+
+Low complexity; stable Mermaid renderer; high user demand.
+
+| Type                | Mermaid keyword   | Notes                                              |
+| ------------------- | ----------------- | -------------------------------------------------- |
+| State               | `stateDiagram-v2` | State machine flow; well-supported                 |
+| Entity Relationship | `erDiagram`       | DB schema diagrams; straightforward rendering      |
+| Gantt               | `gantt`           | Project timeline; date parsing requires validation |
+| Pie chart           | `pie`             | Simple distribution charts; no layout complexity   |
+
+### Phase 3 — Narrative and SCM
+
+Moderate complexity; good Mermaid support but more parser variance.
+
+| Type      | Mermaid keyword | Notes                                                       |
+| --------- | --------------- | ----------------------------------------------------------- |
+| Journey   | `journey`       | User journey maps; limited nesting                          |
+| Git graph | `gitGraph`      | Branch/commit visualisation; requires careful commit syntax |
+| Timeline  | `timeline`      | Chronological events; newer renderer, generally stable      |
+| Mindmap   | `mindmap`       | Hierarchical nodes; indentation-sensitive syntax            |
+
+### Phase 4 — Advanced and Beta
+
+Higher complexity, experimental renderers, or niche use cases. Deferred until core types are stable.
+
+| Type           | Mermaid keyword     | Notes                                                  |
+| -------------- | ------------------- | ------------------------------------------------------ |
+| Quadrant chart | `quadrantChart`     | 2×2 priority matrices                                  |
+| XY chart       | `xychart-beta`      | Bar/line charts; beta renderer                         |
+| Sankey         | `sankey-beta`       | Flow allocation diagrams; beta                         |
+| Block diagram  | `block-beta`        | Structured layout blocks; beta                         |
+| Architecture   | `architecture-beta` | System/component layout; beta                          |
+| Packet         | `packet-beta`       | Network packet diagrams; beta, niche audience          |
+| C4 diagram     | `C4Context`         | System-context modelling; complex multi-keyword parser |
+
+### Rollout criteria per type
+
+Each new diagram type requires:
+
+1. Validator support: `mermaidValidation.js` updated to accept the new keyword.
+2. Render test: at least one positive and one negative test case in `tests/`.
+3. SVG fallback audit: confirm edge/label selectors render correctly in Confluence host.
+4. Documented example: a usage sample added to the macro reset-example bank.
+5. ADR note: any renderer quirks or accepted limitations recorded in the ADR log.
 
 ## 12. Display Modes
 
@@ -85,13 +143,13 @@ A toggle in the macro configuration allows the author to switch between Standard
 
 ### Button Label Glossary
 
-| Current label  | Problem                                          | Proposed label     |
-|----------------|--------------------------------------------------|--------------------|
-| Load Saved     | Unclear — loads what from where?                 | Revert             |
-| Save Config    | Unclear — saves where? Into Forge storage?       | Save to Macro      |
-| Validate       | Clear                                            | Validate           |
-| Render Preview | Clear                                            | Render Preview     |
-| Reset Example  | Clear                                            | Reset Example      |
+| Current label  | Problem                                    | Proposed label |
+| -------------- | ------------------------------------------ | -------------- |
+| Load Saved     | Unclear — loads what from where?           | Revert         |
+| Save Config    | Unclear — saves where? Into Forge storage? | Save to Macro  |
+| Validate       | Clear                                      | Validate       |
+| Render Preview | Clear                                      | Render Preview |
+| Reset Example  | Clear                                      | Reset Example  |
 
 **Load Saved / Revert**: discards unsaved edits and reloads the last-saved macro config from Forge storage. Should only be visible in edit mode.  
 **Save Config / Save to Macro**: persists the current source and title into Forge storage as this macro's configuration. Should only be visible in edit mode.
@@ -194,3 +252,4 @@ A toggle in the macro configuration allows the author to switch between Standard
 - 2026-04-26: Added FR-006–FR-009 for display mode and UX clarity requirements.
 - 2026-04-26: Added Section 12 (Display Modes) defining Standard and Dual modes, mode selector, and button label glossary.
 - 2026-04-26: Added ADR-005 for display mode architecture.
+- 2026-04-28: Expanded Section 7 post-MVP to reference Section 13 type rollout. Added Section 13 (Mermaid Diagram Type Rollout) with phased introduction plan covering Phases 1–4 and per-type acceptance criteria.

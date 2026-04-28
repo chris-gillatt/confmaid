@@ -1,6 +1,8 @@
 # Confmaid - Mermaid Diagrams for Confluence
-# Note - this is a work in progress and is not ready for distribution or use.  I'll publish a package once it's ready.  You have been warned.
 
+# Note - this is a work in progress and is not ready for distribution or use. I'll publish a package once it's ready. You have been warned.
+
+[![CI](https://github.com/chris-gillatt/confmaid/actions/workflows/ci.yml/badge.svg)](https://github.com/chris-gillatt/confmaid/actions/workflows/ci.yml)
 [![dependabot_auto_merge](https://github.com/chris-gillatt/confmaid/actions/workflows/dependency-check.yml/badge.svg)](https://github.com/chris-gillatt/confmaid/actions/workflows/dependency-check.yml)
 
 ![confmaid](./images/confmaid-logo.png)
@@ -202,6 +204,49 @@ podman run --rm -v "$PWD":/workspace:Z -w /workspace confmaid-dev:node24 npm run
 podman run --rm -v "$PWD":/workspace:Z -w /workspace confmaid-dev:node24 npm run lint
 podman run --rm -v "$PWD":/workspace:Z -w /workspace confmaid-dev:node24 npm test
 ```
+
+## Installing on Your Confluence Site
+
+Forge apps are installed per-site and per-environment (development or production). There is no platform-provided package download or drag-and-drop install path — installation always requires either the Forge CLI or the Atlassian Developer Console sharing flow described below.
+
+### Option A — CLI install (for the app owner/developer)
+
+This is the standard path if you are the person who registered and deployed the app.
+
+```bash
+forge install --site <your-site>.atlassian.net --product Confluence --environment production
+```
+
+To upgrade an existing install after deploying a new version:
+
+```bash
+forge install --upgrade --site <your-site>.atlassian.net --product Confluence --environment production
+```
+
+### Option B — Installation link (for sharing without CLI access)
+
+Use this path to let a Confluence site admin install the app without needing the Forge CLI.
+
+**Steps for the app owner (one-time setup):**
+
+1. Deploy the app to the production environment:
+   ```bash
+   forge deploy --environment production
+   ```
+2. Open the [Forge Developer Console](https://developer.atlassian.com/console/myapps/) and select this app.
+3. In the left menu, select **Distribution** → **Edit** under Distribution controls.
+4. Select the **Sharing** option, fill in the app details, and save.
+5. Copy the generated **installation link**.
+6. Send the link to the Confluence site admin.
+
+**Steps for the site admin (installs the app):**
+
+1. Visit the installation link provided by the app owner.
+2. An Atlassian-hosted install screen appears showing the app name and requested permissions.
+3. Select your Confluence site from the dropdown.
+4. Click **Install** — no developer account or CLI needed.
+
+> **Note:** The site admin must have Confluence admin permissions on the target site. The installation link can be revoked at any time from the Developer Console.
 
 ## Next Implementation Steps
 

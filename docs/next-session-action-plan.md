@@ -22,12 +22,14 @@ Context: Persistence is now fixed. Remaining issues are macro edit discoverabili
 Goal: after successful save, user is returned to Confluence editor immediately.
 
 Changes:
+
 - File: static/main/main.js
 - In submit flow, call view.submit with keepEditing=false (or omit keepEditing entirely, since false is default).
 - Keep existing validation first; only submit on valid config.
 - Update status copy from long-running wording to a short final confirmation before modal closes.
 
 Expected result:
+
 - User clicks Save to Macro -> modal closes -> user continues in page editor -> Update page persists diagram.
 
 ### Phase 2: Improve macro edit affordance in page editor
@@ -35,6 +37,7 @@ Expected result:
 Goal: make it obvious how to re-open config for existing macro instances.
 
 Changes:
+
 - Add explicit editor-view detection state:
   - Config context: extension.macro.isConfiguring=true
   - Editor-view context: extension.isEditing=true and !extension.macro.isConfiguring
@@ -46,6 +49,7 @@ Changes:
   - This avoids dead-end UI and mirrors Confluence-native editing flow.
 
 Expected result:
+
 - First click reliably selects macro block and shows Confluence configure controls.
 - Users understand immediately how to reopen config.
 
@@ -54,15 +58,18 @@ Expected result:
 Goal: provide an obvious escape path inside config modal.
 
 Options:
+
 - Add Cancel button that calls view.close() when available.
 - Keep Save to Macro as primary action that closes via submit.
 
 Note:
+
 - Use this only if user feedback still says modal exit is unclear after Phase 1.
 
 ## Testing Checklist
 
 ### Functional
+
 - Insert new macro -> config opens (openOnInsert still true)
 - Enter Mermaid code -> Render Preview works
 - Click Save to Macro -> modal closes automatically
@@ -70,16 +77,19 @@ Note:
 - Re-open page edit -> configure existing macro -> previous config is present
 
 ### Discoverability
+
 - In page editor, click macro once -> configure affordance appears without needing to click title text
 - Hint text appears only in editor-view and not in published page view
 
 ### Regression
+
 - Standard mode: published page shows diagram only
 - Dual mode: published page shows read-only source + diagram
 - Mermaid rendering still has arrows and labels as before
 - Runtime version line still visible in config modal
 
 ### Quality gates
+
 - npm run build:ui
 - npm run lint
 - npm test (currently 33 tests)

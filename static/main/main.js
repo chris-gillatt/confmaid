@@ -102,16 +102,33 @@ function isMobileEditingContext() {
   }
 
   const ua = window.navigator.userAgent || "";
-  const isMobileUA = /(Android|iPhone|iPad|iPod|IEMobile|Opera Mini|AtlassianMobile)/i.test(ua);
-  const hasTouch = Number(window.navigator.maxTouchPoints || 0) > 1;
+  // Broad mobile UA match: covers iOS/Android browsers, Atlassian mobile app webview,
+  // and generic 'Mobile' tokens used by most mobile clients.
+  const isMobileUA = /(Android|iPhone|iPad|iPod|IEMobile|Opera Mini|AtlassianMobile|Mobile)/i.test(
+    ua
+  );
+  const hasTouch = Number(window.navigator.maxTouchPoints || 0) > 0;
   const isSmallViewport =
-    typeof window !== "undefined" &&
-    (window.matchMedia?.("(max-width: 900px)")?.matches || window.innerWidth <= 900);
+    window.matchMedia?.("(max-width: 768px)")?.matches || window.innerWidth <= 768;
 
   return isMobileUA || (hasTouch && isSmallViewport);
 }
 
-function renderMobileEditUnsupportedMessage() {
+function renderMobileUnsupportedMessage(mode = "edit") {
+  if (mode === "view") {
+    setPreviewTitle("Desktop required");
+    previewEl.innerHTML = `
+      <div class="mobile-edit-blocked" role="note" aria-live="polite">
+        <h3>This diagram requires the Confluence desktop app</h3>
+        <p>
+          Mermaid diagrams rendered by Confmaid are not supported in the Confluence
+          mobile app. Open this page in the Confluence desktop web app to view the
+          diagram.
+        </p>
+      </div>
+    `;
+    return;
+  }
   setPreviewTitle("Desktop editing required");
   previewEl.innerHTML = `
     <div class="mobile-edit-blocked" role="note" aria-live="polite">
@@ -323,7 +340,9 @@ function applyMermaidSvgFallbackStyles(svgElement) {
   setShape(".cluster rect");
   setShape(".cluster polygon");
 
-  for (const edge of svgElement.querySelectorAll(".edgePath path, path.path, .flowchart-link, g.edge path")) {
+  for (const edge of svgElement.querySelectorAll(
+    ".edgePath path, path.path, .flowchart-link, g.edge path"
+  )) {
     edge.setAttribute("fill", "none");
     edge.setAttribute("stroke", "#1f2937");
     edge.setAttribute("stroke-width", "1.6");
@@ -335,7 +354,7 @@ function applyMermaidSvgFallbackStyles(svgElement) {
   setShape(".labelBox");
 
   for (const line of svgElement.querySelectorAll(
-    ".messageLine0, .messageLine1, line.messageLine0, line.messageLine1, .signal-line, .actor-line",
+    ".messageLine0, .messageLine1, line.messageLine0, line.messageLine1, .signal-line, .actor-line"
   )) {
     line.setAttribute("fill", "none");
     line.setAttribute("stroke", "#1f2937");
@@ -346,13 +365,17 @@ function applyMermaidSvgFallbackStyles(svgElement) {
     dashedReturn.setAttribute("stroke-dasharray", "3,3");
   }
 
-  for (const participantLabel of svgElement.querySelectorAll("g.actor text, text.actor, text.actor-man")) {
+  for (const participantLabel of svgElement.querySelectorAll(
+    "g.actor text, text.actor, text.actor-man"
+  )) {
     participantLabel.setAttribute("text-anchor", "middle");
     participantLabel.setAttribute("dominant-baseline", "middle");
     participantLabel.setAttribute("font-weight", "500");
   }
 
-  for (const seqLabel of svgElement.querySelectorAll("text.messageText, text.labelText, text.loopText")) {
+  for (const seqLabel of svgElement.querySelectorAll(
+    "text.messageText, text.labelText, text.loopText"
+  )) {
     seqLabel.setAttribute("font-weight", "500");
   }
 
@@ -363,7 +386,10 @@ function applyMermaidSvgFallbackStyles(svgElement) {
 
   for (const label of svgElement.querySelectorAll("text, tspan, .nodeLabel, .label")) {
     label.setAttribute("fill", "#111827");
-    label.setAttribute("font-family", "ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif");
+    label.setAttribute(
+      "font-family",
+      "ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
+    );
   }
 }
 
@@ -516,11 +542,12 @@ async function bootstrap() {
   const context = await getForgeContext();
   const isConfiguring = context?.extension?.macro?.isConfiguring ?? false;
   const isEditing = context?.extension?.isEditing ?? false;
+  const isMobile = isMobileEditingContext();
 
   if (isConfiguring) {
-    if (isMobileEditingContext()) {
+    if (isMobile) {
       document.body.classList.add("mode-mobile-unsupported");
-      renderMobileEditUnsupportedMessage();
+      renderMobileUnsupportedMessage("edit");
       return;
     }
     document.body.classList.add("mode-config");
@@ -528,6 +555,12 @@ async function bootstrap() {
     await renderSource();
   } else {
     document.body.classList.add("mode-view");
+    if (isEditing && isMobile) {
+      // Macro is visible in the page editor on mobile — editing is not supported.
+      document.body.classList.add("mode-mobile-unsupported");
+      renderMobileUnsupportedMessage("edit");
+      return;
+    }
     if (isEditing) {
       // In page editor (non-config), keep macro easy to select/configure.
       document.body.classList.add("mode-editor-view");
@@ -541,9 +574,17 @@ async function bootstrap() {
     }
     if (savedConfig.source) {
       applyConfigToUI(savedConfig);
-      await renderSource();
+      try {
+        await renderSource();
+      } catch {
+        if (isMobile) {
+          document.body.classList.add("mode-mobile-unsupported");
+          renderMobileUnsupportedMessage("view");
+        }
+      }
     } else {
-      previewEl.innerHTML = '<p class="view-placeholder">No diagram configured\u2014edit this page to add one.</p>';
+      previewEl.innerHTML =
+        '<p class="view-placeholder">No diagram configured\u2014edit this page to add one.</p>';
     }
   }
 }

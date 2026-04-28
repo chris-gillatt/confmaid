@@ -229,3 +229,36 @@ body.mode-editor-view .editor-hint {
 body.mode-editor-view #preview {
   pointer-events: none;
 }
+
+/* Config opened on mobile: show an explicit desktop-only editing message. */
+body.mode-mobile-unsupported .source-panel {
+  display: none;
+}
+
+body.mode-mobile-unsupported .preview-panel {
+  width: 100%;
+}
+
+.mobile-edit-blocked {
+  margin: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fffdf7;
+  color: #374151;
+}
+
+.mobile-edit-blocked h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: #1f2937;
+}
+
+.mobile-edit-blocked p {
+  margin: 0 0 8px;
+  line-height: 1.45;
+}
+
+.mobile-edit-blocked p:last-child {
+  margin-bottom: 0;
+}

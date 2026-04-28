@@ -96,6 +96,38 @@ async function submitMacroConfig(config, keepEditing = true) {
   writeLocalConfig(config);
 }
 
+function isMobileEditingContext() {
+  if (typeof window === "undefined" || typeof window.navigator === "undefined") {
+    return false;
+  }
+
+  const ua = window.navigator.userAgent || "";
+  const isMobileUA = /(Android|iPhone|iPad|iPod|IEMobile|Opera Mini|AtlassianMobile)/i.test(ua);
+  const hasTouch = Number(window.navigator.maxTouchPoints || 0) > 1;
+  const isSmallViewport =
+    typeof window !== "undefined" &&
+    (window.matchMedia?.("(max-width: 900px)")?.matches || window.innerWidth <= 900);
+
+  return isMobileUA || (hasTouch && isSmallViewport);
+}
+
+function renderMobileEditUnsupportedMessage() {
+  setPreviewTitle("Desktop editing required");
+  previewEl.innerHTML = `
+    <div class="mobile-edit-blocked" role="note" aria-live="polite">
+      <h3>Editing is not supported on mobile</h3>
+      <p>
+        Confmaid diagrams can be viewed on mobile, but editing Mermaid source requires
+        the Confluence desktop web editor.
+      </p>
+      <p>
+        Open this page in desktop view, select the macro, then choose
+        <strong>Configure</strong> to edit the diagram.
+      </p>
+    </div>
+  `;
+}
+
 function readLocalConfig() {
   try {
     const raw = localStorage.getItem(LOCAL_CONFIG_KEY);
@@ -486,6 +518,11 @@ async function bootstrap() {
   const isEditing = context?.extension?.isEditing ?? false;
 
   if (isConfiguring) {
+    if (isMobileEditingContext()) {
+      document.body.classList.add("mode-mobile-unsupported");
+      renderMobileEditUnsupportedMessage();
+      return;
+    }
     document.body.classList.add("mode-config");
     await loadMacroConfig();
     await renderSource();
